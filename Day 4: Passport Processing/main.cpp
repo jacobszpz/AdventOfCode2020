@@ -24,7 +24,7 @@ bool passValid(string passport) {
     bool bHasRequiredAttributes = false;
     bool cid = false;
     
-    // Change to true for part 1
+    // Change to true for part 2
     const bool validateValues = false;
     
     cout << "Passport " << passport << ", ";
@@ -51,7 +51,7 @@ bool passValid(string passport) {
             cid = true;
         }
         
-        if (false) {
+        if (validateValues) {
             if (attr_name == "byr") {
                 bValid = bValid && validNo(attr_value, 1920, 2002);
             } else if (attr_name == "iyr") {
