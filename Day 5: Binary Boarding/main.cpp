@@ -6,6 +6,9 @@
 
 using namespace ::std;
 
+// Set to true for part one
+bool highest = true;
+
 int parseCode(string input, char lowerHalf = 'B') {
     double power = 2;
     int row = 0;
@@ -46,22 +49,28 @@ int MonkeyfiedSnakes(string text_file) {
         }
         input_file.close();
     }
+
+    if (highest) {
+        return highestCode;
+    }
     
     sort(allCodes, allCodes+codeAmount);
     int firstSeat = allCodes[0];
     
     for (int i = 0; i < codeAmount; i++) {
         if (firstSeat + i != allCodes[i]) {
-            cout << "Code missing: " << allCodes[i] - 1 << endl;
-            break;
+            return allCodes[i] - 1;
         }
     }
 
-    return highestCode;
+    return 0;
 }
 
 int main() {
-    int highest = MonkeyfiedSnakes("input");
-    cout << "Highest Code: " << highest << endl;
+    highest = true;
+    cout << "Part One Answer: " << MonkeyfiedSnakes("input") << endl;
+
+    highest = false;
+    cout << "Part Two Answer: " << MonkeyfiedSnakes("input") << endl;
     return 0;
 }

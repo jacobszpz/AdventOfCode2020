@@ -5,30 +5,28 @@
 
 using namespace ::std;
 
+// Set to true for part two
+bool validateValues = false;
+
 // Perhaps using C++ wasn't the best idea after all
-// Add a line at the end of your input file if not using the one included along this solution
+// Add an extra line at the end of your input file if not using the one included along this solution
 
 bool validNo(string value, int min, int max) {
     int year = stoi(value);
     if (year < min || year > max) {
         return false;
     }
-    
+
     return true;
 }
 
 bool passValid(string passport) {
     string fields[] = {"byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid", "cid"};
-    
-    bool bValid = true;
-    bool bHasRequiredAttributes = false;
+    string eyeColours[] = {"amb", "blu", "brn", "gry", "grn", "hzl", "oth"};
+
+    bool bValidValues = true;
     bool cid = false;
-    
-    // Change to true for part 2
-    const bool validateValues = false;
-    
-    cout << "Passport " << passport << ", ";
-    
+
     int attrCount = count(passport.begin(), passport.end(), ' ');
 
     string attr[attrCount] = {};
@@ -42,57 +40,67 @@ bool passValid(string passport) {
             attr[attr_i] = attr[attr_i] + passport[i];
         }
     }
-    
+
     for (int i = 0; i < attrCount; i++) {
         string attr_name = attr[i].substr(0, 3);
         string attr_value = attr[i].substr(4);
-        
-        if (attr_name == "cid") {
-            cid = true;
-        }
-        
-        if (validateValues) {
-            if (attr_name == "byr") {
-                bValid = bValid && validNo(attr_value, 1920, 2002);
-            } else if (attr_name == "iyr") {
-                bValid = bValid && validNo(attr_value, 2010, 2020);
-            } else if (attr_name == "eyr") {
-                bValid = bValid && validNo(attr_value, 2020, 2030);
-            } else if (attr_name == "hgt") {
+
+        auto itr = find(fields, end(fields), attr_name);
+        int attr_i = distance(fields, itr);
+
+        switch (attr_i) {
+            case 0: {
+                bValidValues &= validNo(attr_value, 1920, 2002);}
+                break;
+            case 1: {
+                bValidValues &= validNo(attr_value, 2010, 2020);}
+                break;
+            case 2: {
+                bValidValues &= validNo(attr_value, 2020, 2030);}
+                break;
+            case 3: {
                 string measure = attr_value.substr(attr_value.length() - 2);
+
                 if (measure == "cm") {
-                    bValid = bValid && validNo(attr_value, 150, 193);
+                    bValidValues &= validNo(attr_value, 150, 193);
                 } else if (measure == "in") {
-                    bValid = bValid && validNo(attr_value, 59, 76);
+                    bValidValues &= validNo(attr_value, 59, 76);
                 } else {
-                    bValid = false;
-                }
-            } else if (attr_name == "hcl") {
-                if (attr_value[0] == '#' && attr_value.length() == 7) {
-                    bValid = bValid && all_of(attr_value.begin() + 1, attr_value.end(), ::isalnum);
+                    bValidValues = false;
+                }}
+
+                break;
+            case 4: {
+                if (attr_value.length() == 7 && attr_value[0] == '#') {
+                    bValidValues &= all_of(attr_value.begin() + 1, attr_value.end(), ::isalnum);
                 } else {
-                    bValid = false;
-                }
-                
-            } else if (attr_name == "ecl") {
-                // Don't know how to simplify this yet, sorry
-                if (attr_value != "amb" && attr_value != "blu" && attr_value != "brn" && attr_value != "gry" && attr_value != "grn" && attr_value != "hzl" && attr_value != "oth") {
-                    bValid = false;
-                }
-                
-            } else if (attr_name == "pid") {
+                    bValidValues = false;
+                }}
+                break;
+            case 5: {
+                auto eyeColourItr = find(eyeColours, end(eyeColours), attr_value);
+                bValidValues &= (eyeColourItr != end(eyeColours));}
+                break;
+            case 6: {
                 if (attr_value.length() == 9) {
-                    bValid = bValid && all_of(attr_value.begin(), attr_value.end(), ::isdigit);
+                    bValidValues &= all_of(attr_value.begin(), attr_value.end(), ::isdigit);
                 } else {
-                    bValid = false;
-                }
-            }
+                    bValidValues = false;
+                }}
+                break;
+            case 7: {
+                cid = true;}
+                break;
         }
     }
-    
-    cout << bValid << endl;
-    bHasRequiredAttributes = (attrCount == 8 || ((attrCount == 7) && !cid));
-    return bHasRequiredAttributes && bValid;
+
+    bool bAllFields = (attrCount == 8 || ((attrCount == 7) && !cid));
+
+    if (!validateValues) {
+        return bAllFields;
+    }
+
+    return bAllFields && bValidValues;
 }
 
 int Multipass(string text_file) {
@@ -104,7 +112,7 @@ int Multipass(string text_file) {
 
     if (input_file.is_open()) {
         string passport;
-        
+
         while (getline(input_file, line)) {
             if (line == "") {
                 if (passValid(passport)) {
@@ -115,13 +123,17 @@ int Multipass(string text_file) {
                 passport.append(separator + line);
             }
         }
-        
+
         input_file.close();
     }
     return valid;
 }
 
 int main() {
-    cout << Multipass("input") << endl;
+    validateValues = false;
+    cout << "Part One Answer: " << Multipass("input") << endl;
+
+    validateValues = true;
+    cout << "Part Two Answer: " << Multipass("input") << endl;
     return 0;
 }
