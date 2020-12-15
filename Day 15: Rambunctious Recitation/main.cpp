@@ -1,8 +1,6 @@
-#include <algorithm>
 #include <string>
 #include <iostream>
 #include <vector>
-#include <map>
 
 using namespace ::std;
 unsigned long int gTurns = 0;
