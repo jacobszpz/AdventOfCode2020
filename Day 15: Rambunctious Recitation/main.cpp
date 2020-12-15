@@ -5,13 +5,13 @@
 #include <map>
 
 using namespace ::std;
-int gTurns = 0;
+unsigned long int gTurns = 0;
 
 long int Elf(string input) {
     const char startDelim = ',';
     int currentPos = 0, commaPos;
     vector<int> starting;
-    map<long int, long int> history;
+    vector<unsigned long int> history(gTurns);
 
     do {
         input = input.substr(currentPos);
@@ -25,22 +25,22 @@ long int Elf(string input) {
         currentPos = commaPos + 1;
     } while (currentPos < input.length());
 
-    long int turn = 0;
+    unsigned long int turn = 0;
     int lastSpoken = 0, newSpoken = 0;
 
     while (turn != gTurns) {
         if (turn < starting.size()) {
             newSpoken = starting[turn];
         } else {
-            if (history.count(lastSpoken)) {
-                newSpoken = (turn - 1) - (history[lastSpoken]);
+            if (history[lastSpoken] != 0) {
+                newSpoken = turn - history[lastSpoken];
             } else {
                 newSpoken = 0;
             }
         }
 
         if (turn > 0) {
-            history[lastSpoken] = turn - 1;
+            history[lastSpoken] = turn;
         }
 
         lastSpoken = newSpoken;
@@ -57,8 +57,6 @@ int main() {
     // Part One
     gTurns = 2020;
     cout << "Part One Answer: " << Elf(input) << endl;
-
-    cout << "This can take a while (< 2m), sit tight" << endl;
 
     // Part Two
     gTurns = 30000000;
