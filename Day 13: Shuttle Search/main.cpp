@@ -70,7 +70,39 @@ long long int StayAbove50(string text_file) {
         return lowestT * earliestBus;
 
     } else {
+        int i = 0;
 
+        // t is congruent with congruence mod bus.id
+        unsigned long long int t, prevC, prevMod;
+        int c, mod;
+
+        // Let's get down to business
+        for (Bus &bus : buses) {
+            mod = bus.id;
+            c = ((bus.id - (bus.r % bus.id)) % bus.id);
+
+            if (!i) {
+                prevC = c;
+                prevMod = mod;                
+            } else {
+                // Look for congruence solution
+                int s = 0;
+                while (true) {
+                    if (((prevC + (prevMod * s)) % mod) == c) {
+                        break;
+                    }
+
+                    s++;
+                }
+
+                prevC = (prevMod * s) + prevC;
+                prevMod = prevMod * mod;
+            }
+
+            i++;
+        }
+
+        return prevC;
     }
     
     return 0;
@@ -83,7 +115,6 @@ int main() {
 
     // Part Two
     gUseTimestamp = false;
-    //StayAbove50("test");
-    //cout << "Part Two Answer: " <<  << endl;
+    cout << "Part Two Answer: " << StayAbove50("input") << endl;
     return 0;
 }
