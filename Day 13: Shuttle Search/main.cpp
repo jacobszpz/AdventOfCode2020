@@ -56,20 +56,21 @@ long long int StayAbove50(string text_file) {
     }
 
     if (gUseTimestamp) {
-        int highestR = 0, earliestBus;
+        int lowestT = (buses[0].id), earliestBus;
         for (Bus &bus : buses) {
-            int r = (timestamp % bus.id);
-            highestR = max(r, highestR);
+            int t = bus.id - (timestamp % bus.id);
 
-            if (r == highestR) {
+            lowestT = min(t, lowestT);
+
+            if (t == lowestT) {
                 earliestBus = bus.id;
             }
         }
 
-        return (earliestBus - highestR) * earliestBus;
+        return lowestT * earliestBus;
 
     } else {
-        
+
     }
     
     return 0;
