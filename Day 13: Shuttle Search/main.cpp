@@ -6,13 +6,23 @@
 
 using namespace ::std;
 
-int StayAbove50(string text_file) {
+// set to true for part one
+bool gUseTimestamp = false;
+
+struct Bus {
+    int r;
+    int id;
+
+    Bus(int p, int id) : r(p), id(id) {}
+};
+
+long long int StayAbove50(string text_file) {
     string line;
     ifstream input_file(text_file);
 
     int timestamp;
     char busDelim = ',';
-    vector<int> buses;
+    vector<Bus> buses;
 
     // Load file to memory
     if (input_file.is_open()) {
@@ -23,7 +33,7 @@ int StayAbove50(string text_file) {
         string schedule = line;
 
         string bus;
-        int currentPos = 0, commaPos;
+        int currentPos = 0, commaPos, currentBus = 0;
 
         do {
             schedule = schedule.substr(currentPos);
@@ -36,23 +46,30 @@ int StayAbove50(string text_file) {
             bus = schedule.substr(0, commaPos);
 
             if (bus != "x") {
-                buses.push_back(stoi(bus));
+                buses.push_back(Bus(currentBus, stoi(bus)));
             }
             currentPos = commaPos + 1;
+            currentBus++;
         } while (currentPos < schedule.length());
 
         input_file.close();
     }
 
-    int currentTime = timestamp;
-    while (true) {
-        for (auto &bus : buses) {
-            if (currentTime % bus == 0) {
-                return (currentTime - timestamp) * bus;
+    if (gUseTimestamp) {
+        int highestR = 0, earliestBus;
+        for (Bus &bus : buses) {
+            int r = (timestamp % bus.id);
+            highestR = max(r, highestR);
+
+            if (r == highestR) {
+                earliestBus = bus.id;
             }
         }
+
+        return (earliestBus - highestR) * earliestBus;
+
+    } else {
         
-        currentTime++;
     }
     
     return 0;
@@ -60,10 +77,12 @@ int StayAbove50(string text_file) {
 
 int main() {
     // Part One
+    gUseTimestamp = true;
     cout << "Part One Answer: " << StayAbove50("input") << endl;
-/*
+
     // Part Two
-    countLetter = false;
-    cout << "Part Two Answer: " << PassPolicy("input") << endl;*/
+    gUseTimestamp = false;
+    //StayAbove50("test");
+    //cout << "Part Two Answer: " <<  << endl;
     return 0;
 }
