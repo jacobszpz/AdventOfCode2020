@@ -70,8 +70,7 @@ int Inception(string text_file) {
             string bag = "";
 
             if (contents != noBags) {
-                int currentPos = 0;
-                int colon_pos;
+                int currentPos = 0, colon_pos;
 
                 do {
                     contents = contents.substr(currentPos);
@@ -83,7 +82,6 @@ int Inception(string text_file) {
 
                     bag = contents.substr(0, colon_pos);
                     currentPos = colon_pos + bagsDelim.length();
-                    colon_pos = contents.find(bagsDelim);
 
                     int nameEnd = bag.find(contentNameDelim);
                     string contentName = bag.substr(2, nameEnd - 2);
